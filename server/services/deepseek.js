@@ -26,28 +26,41 @@ async function generatePitch(idea) {
     throw new Error('DeepSeek is not configured. Please set a valid DEEPSEEK_API_KEY in your .env file.');
   }
 
-  const SYSTEM_PROMPT = `You are a professional pitch deck creator and startup advisor. 
+  const SYSTEM_PROMPT = `You are a professional pitch deck designer and startup advisor. 
 Given a startup idea, create a compelling pitch with:
 1. A catchy, memorable company name (2-3 words max)
 2. A clear, compelling one-sentence elevator pitch
-3. Exactly 4 HTML slides for a pitch deck
+3. Exactly 4 HTML slides for a pitch deck with modern, professional design
 
-Each slide must be valid HTML with Tailwind CSS classes. Use modern, professional styling.
+Each slide must be valid HTML with Tailwind CSS classes. Use cutting-edge design:
+- Professional gradient backgrounds with modern color palettes
+- Bold typography with proper hierarchy
+- Icons and visual elements (use Unicode icons: 🚀, 💡, 📈, 🎯, 💰, 🌟, ⚡, 🔥, 💎, 🏆)
+- Proper spacing and layout
+- High contrast for readability
+- Professional shadows and effects
+
 Slides should cover: Problem, Solution, Market/Business Model, and Call to Action.
+
+Use these modern gradient combinations:
+- Slide 1 (Problem): from-slate-900 via-purple-900 to-slate-900
+- Slide 2 (Solution): from-blue-900 via-indigo-900 to-purple-900  
+- Slide 3 (Market/Business): from-emerald-900 via-teal-900 to-cyan-900
+- Slide 4 (Call to Action): from-rose-900 via-pink-900 to-purple-900
 
 Return ONLY valid JSON in this exact format:
 {
   "name": "Company Name",
   "elevator": "One sentence elevator pitch that clearly explains the value proposition.",
   "slides": [
-    "<section class='min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 text-white p-8 flex flex-col justify-center items-center'><h1 class='text-6xl font-bold mb-8'>Slide 1 Content</h1><p class='text-xl text-center max-w-4xl'>Description</p></section>",
-    "<section class='min-h-screen bg-gradient-to-br from-purple-900 to-pink-900 text-white p-8 flex flex-col justify-center items-center'>Slide 2 HTML</section>",
-    "<section class='min-h-screen bg-gradient-to-br from-pink-900 to-red-900 text-white p-8 flex flex-col justify-center items-center'>Slide 3 HTML</section>",
-    "<section class='min-h-screen bg-gradient-to-br from-red-900 to-orange-900 text-white p-8 flex flex-col justify-center items-center'>Slide 4 HTML</section>"
+    "<section class='min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-12 flex flex-col justify-center items-center relative overflow-hidden'><div class='absolute inset-0 bg-black/20'></div><div class='relative z-10 text-center max-w-6xl mx-auto'><div class='text-6xl mb-6'>🔥</div><h1 class='text-7xl md:text-8xl font-black mb-8 bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent leading-tight'>THE PROBLEM</h1><p class='text-2xl md:text-3xl text-purple-100 font-light leading-relaxed mb-8'>Problem description here</p><div class='w-24 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto rounded-full'></div></div></section>",
+    "<section class='min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 text-white p-12 flex flex-col justify-center items-center relative overflow-hidden'><div class='absolute inset-0 bg-black/20'></div><div class='relative z-10 text-center max-w-6xl mx-auto'><div class='text-6xl mb-6'>💡</div><h1 class='text-7xl md:text-8xl font-black mb-8 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent leading-tight'>OUR SOLUTION</h1><p class='text-2xl md:text-3xl text-blue-100 font-light leading-relaxed mb-8'>Solution description here</p><div class='w-24 h-1 bg-gradient-to-r from-blue-400 to-indigo-400 mx-auto rounded-full'></div></div></section>",
+    "<section class='min-h-screen bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900 text-white p-12 flex flex-col justify-center items-center relative overflow-hidden'><div class='absolute inset-0 bg-black/20'></div><div class='relative z-10 text-center max-w-6xl mx-auto'><div class='text-6xl mb-6'>📈</div><h1 class='text-7xl md:text-8xl font-black mb-8 bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent leading-tight'>MARKET</h1><p class='text-2xl md:text-3xl text-emerald-100 font-light leading-relaxed mb-8'>Market and business model here</p><div class='w-24 h-1 bg-gradient-to-r from-emerald-400 to-teal-400 mx-auto rounded-full'></div></div></section>",
+    "<section class='min-h-screen bg-gradient-to-br from-rose-900 via-pink-900 to-purple-900 text-white p-12 flex flex-col justify-center items-center relative overflow-hidden'><div class='absolute inset-0 bg-black/20'></div><div class='relative z-10 text-center max-w-6xl mx-auto'><div class='text-6xl mb-6'>🚀</div><h1 class='text-7xl md:text-8xl font-black mb-8 bg-gradient-to-r from-white to-rose-200 bg-clip-text text-transparent leading-tight'>LET'S BUILD</h1><p class='text-2xl md:text-3xl text-rose-100 font-light leading-relaxed mb-8'>Call to action here</p><div class='w-24 h-1 bg-gradient-to-r from-rose-400 to-pink-400 mx-auto rounded-full'></div></div></section>"
   ]
 }
 
-Make it professional, visually appealing, and persuasive. Use appropriate gradients and ensure text is readable.`;
+Make each slide visually stunning, professional, and persuasive. Use bold typography, appropriate icons, and ensure perfect readability with high contrast.`;
 
   try {
     const response = await deepseekClient.post('/chat/completions', {

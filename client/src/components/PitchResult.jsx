@@ -20,8 +20,9 @@ import {
   Check
 } from 'lucide-react'
 import { generatePDF, downloadSlidesAsImages } from '../services/pdf'
+import CodePromptGenerator from './CodePromptGenerator'
 
-const PitchResult = ({ pitchData, onReset }) => {
+const PitchResult = ({ pitchData, originalIdea, onReset }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isDownloading, setIsDownloading] = useState(false)
   const [showSlidePreview, setShowSlidePreview] = useState(false)
@@ -474,6 +475,9 @@ const PitchResult = ({ pitchData, onReset }) => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Enhanced AI Code Generator */}
+      <CodePromptGenerator idea={originalIdea} pitchData={pitchData} />
     </motion.div>
   )
 }

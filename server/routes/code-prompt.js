@@ -1,50 +1,66 @@
 const express = require('express');
 const router = express.Router();
-const { generateCodePrompt } = require('../services/code-prompt-generator');
+const { generateEnhancedCodePrompt } = require('../services/code-prompt-generator');
+const { validateCodePromptInput } = require('../utils/validators');
 
 /**
  * POST /api/code-prompt
- * Generate AI code prompt for a startup idea
+ * Generate comprehensive AI code prompt for a startup idea with pitch data
  * 
  * @param {string} idea - The startup idea description
- * @returns {object} { prompt: string } - Generated code prompt
+ * @param {Object} pitchData - Optional pitch data including name, elevator pitch, and slides
+ * @returns {Object} Enhanced prompt data with tech stack and structure recommendations
  */
 router.post('/', async (req, res) => {
   try {
-    const { idea } = req.body;
+    const { idea, pitchData } = req.body;
 
-    // Validate input
-    if (!idea || typeof idea !== 'string' || idea.trim().length === 0) {
+    // Enhanced validation
+    const validationResult = validateCodePromptInput({ idea, pitchData });
+    if (!validationResult.isValid) {
       return res.status(400).json({
-        error: 'Invalid input',
-        message: 'Idea field is required and must be a non-empty string'
+        success: false,
+        error: 'Validation failed',
+        message: validationResult.error,
+        details: validationResult.details
       });
     }
 
-    // Validate idea length (prevent extremely long inputs)
-    if (idea.trim().length > 2000) {
-      return res.status(400).json({
-        error: 'Input too long',
-        message: 'Idea description must be less than 2000 characters'
-      });
-    }
+    console.log('🤖 Generating enhanced code prompt for:', idea.substring(0, 50) + '...');
 
-    // Generate the code prompt
-    const prompt = await generateCodePrompt(idea.trim());
+    // Generate comprehensive prompt data
+    const promptData = await generateEnhancedCodePrompt({
+      idea: idea.trim(),
+      pitchData: pitchData || null
+    });
 
-    // Return the generated prompt
+    console.log('✅ Enhanced code prompt generated successfully');
+
+    // Return structured response
     res.json({
       success: true,
-      prompt: prompt
+      data: {
+        prompt: promptData.prompt,
+        techStack: promptData.techStack,
+        fileStructure: promptData.fileStructure,
+        summary: promptData.summary,
+        features: promptData.features,
+        generatedAt: new Date().toISOString()
+      }
     });
 
   } catch (error) {
-    console.error('Code prompt generation error:', error);
+    console.error('❌ Code prompt generation error:', error);
     
-    // Return user-friendly error
-    res.status(500).json({
-      error: 'Generation failed',
-      message: 'Failed to generate code prompt. Please try again.'
+    // Enhanced error handling
+    const statusCode = error.name === 'ValidationError' ? 400 : 
+                      error.name === 'RateLimitError' ? 429 : 500;
+    
+    res.status(statusCode).json({
+      success: false,
+      error: error.name || 'Generation failed',
+      message: error.message || 'Failed to generate code prompt. Please try again.',
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
     });
   }
 });

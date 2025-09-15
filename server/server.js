@@ -25,6 +25,7 @@ app.use('/api/', limiter);
 app.use('/api/generate', require('./routes/generate'));
 app.use('/api/history', require('./routes/history'));
 app.use('/api/code-prompt', require('./routes/code-prompt')); // New AI Code Prompt Generator route
+app.use('/api/buildprompt', require('./routes/buildprompt')); // Optimized Build Prompt Generator route
 
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'PitchPerfect server is running' });

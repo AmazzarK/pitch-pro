@@ -66,20 +66,68 @@ export const generatePitch = async (idea) => {
 }
 
 /**
- * Generate AI code prompt for a startup idea
+ * Generate enhanced AI code prompt for a startup idea with optional pitch data
  * @param {string} idea - The startup idea description
- * @returns {Promise<{success: boolean, prompt: string}>} - Generated code prompt
+ * @param {Object} [pitchData] - Optional pitch data including name, elevator pitch, and slides
+ * @returns {Promise<Object>} Enhanced code prompt data with tech stack and structure
  */
-export const generateCodePrompt = async (idea) => {
+export const generateCodePrompt = async (idea, pitchData = null) => {
   if (!idea || typeof idea !== 'string') {
     throw new Error('Please provide a valid startup idea')
   }
 
   if (idea.trim().length < 10) {
-    throw new Error('Please provide a more detailed description of your startup idea')
+    throw new Error('Please provide a more detailed description (at least 10 characters)')
   }
 
-  const response = await api.post('/code-prompt', { idea: idea.trim() })
+  if (idea.trim().length > 2000) {
+    throw new Error('Description too long (maximum 2000 characters)')
+  }
+
+  console.log('🚀 Generating enhanced code prompt...', { ideaLength: idea.trim().length, hasPitchData: !!pitchData })
+
+  const response = await api.post('/code-prompt', { 
+    idea: idea.trim(),
+    pitchData: pitchData 
+  })
+  
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Failed to generate code prompt')
+  }
+  
+  console.log('✅ Code prompt generated successfully')
+  return response.data
+}
+
+/**
+ * Generate optimized build prompt for faster AI response (500 character limit)
+ * @param {string} idea - The startup idea description (max 500 characters)
+ * @returns {Promise<Object>} Build prompt data optimized for quick generation
+ */
+export const generateBuildPrompt = async (idea) => {
+  if (!idea || typeof idea !== 'string') {
+    throw new Error('Please provide a valid startup idea')
+  }
+
+  if (idea.trim().length < 10) {
+    throw new Error('Please provide a more detailed description (at least 10 characters)')
+  }
+
+  if (idea.trim().length > 500) {
+    throw new Error('Description too long (maximum 500 characters for quick generation)')
+  }
+
+  console.log('⚡ Generating optimized build prompt...', { ideaLength: idea.trim().length })
+
+  const response = await api.post('/buildprompt', { 
+    idea: idea.trim()
+  })
+  
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Failed to generate build prompt')
+  }
+  
+  console.log('✅ Build prompt generated successfully')
   return response.data
 }
 
