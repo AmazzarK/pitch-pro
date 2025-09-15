@@ -1,6 +1,12 @@
 const axios = require('axios');
 
 async function generateBuildPrompt(idea, pitchData) {
+  // Environment validation
+  if (!process.env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY === 'your-deepseek-api-key-here') {
+    console.warn('⚠️ DeepSeek API key not configured, using template fallback');
+    return generateTemplatePrompt(idea, pitchData);
+  }
+
   const systemPrompt = `You are a senior full-stack developer. Create a concise MERN development prompt (max 800 words) for AI coding assistants.
 
 Include:
@@ -16,6 +22,7 @@ Keep it actionable and focused. Return only the prompt text.`;
   const userPrompt = `Startup idea: ${idea}${pitchData?.name ? `\nCompany: ${pitchData.name}` : ''}${pitchData?.elevator ? `\nPitch: ${pitchData.elevator}` : ''}`;
 
   try {
+    console.log('🚀 Calling DeepSeek API for build prompt generation...');
     const response = await axios.post('https://api.deepseek.com/v1/chat/completions', {
       model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
       messages: [
@@ -29,12 +36,16 @@ Keep it actionable and focused. Return only the prompt text.`;
         'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      timeout: 30000
+      timeout: 45000
     });
 
+    console.log('✅ DeepSeek API response received successfully');
     return response.data.choices[0].message.content;
   } catch (error) {
-    console.warn('DeepSeek API error, using template:', error.message);
+    console.warn('⚠️ DeepSeek API error, using template fallback:', error.message);
+    if (error.code === 'ECONNABORTED') {
+      console.warn('📡 Request timeout - DeepSeek API took too long to respond');
+    }
     return generateTemplatePrompt(idea, pitchData);
   }
 }

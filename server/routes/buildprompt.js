@@ -20,19 +20,34 @@ router.post('/', async (req, res) => {
       });
     }
 
+    console.log('⚡ Generating optimized build prompt for:', idea.substring(0, 50) + '...');
+    
     const prompt = await generateBuildPrompt(idea.trim(), pitchData);
+
+    console.log('✅ Build prompt generated successfully');
 
     res.json({
       success: true,
-      prompt: prompt
+      data: {
+        prompt: prompt,
+        characterCount: prompt.length,
+        generatedAt: new Date().toISOString(),
+        optimizedFor: 'quick development'
+      }
     });
 
   } catch (error) {
-    console.error('Build prompt generation error:', error);
+    console.error('❌ Build prompt generation error:', error.message);
+    console.error('Error details:', {
+      name: error.name,
+      code: error.code,
+      status: error.response?.status,
+      statusText: error.response?.statusText
+    });
     
     res.status(500).json({
       success: false,
-      message: error.message || 'Failed to generate build prompt'
+      message: error.message || 'Failed to generate build prompt. Please try again.'
     });
   }
 });

@@ -87,7 +87,7 @@ function App() {
               <IdeaForm onSubmit={handleGeneratePitch} />
               
               {/* Quick Build Prompt Generator Section */}
-              <div className="relative">
+              <div id="quick-build-prompt" className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-3xl blur-xl"></div>
                 <div className="relative">
                   <div className="text-center mb-12">

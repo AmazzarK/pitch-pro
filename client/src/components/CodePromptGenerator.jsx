@@ -13,7 +13,8 @@ import {
   X,
   Folder,
   Settings,
-  Database
+  Database,
+  ArrowDown
 } from 'lucide-react'
 import { generateCodePrompt } from '../services/api'
 
@@ -144,6 +145,20 @@ const CodePromptGenerator = ({ idea, pitchData }) => {
     
     return { isValid: true, error: '' }
   }, [])
+
+  /**
+   * Handle scroll to Quick Build Prompt section
+   */
+  const handleScrollToQuickPrompt = useCallback(() => {
+    const element = document.getElementById('quick-build-prompt');
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+      showToast('Scrolled to Quick Build Prompt Generator! ⚡');
+    }
+  }, [showToast]);
 
   /**
    * Enhanced prompt generation with validation and error handling
@@ -343,30 +358,58 @@ const CodePromptGenerator = ({ idea, pitchData }) => {
 
           {/* Generate Button */}
           <motion.div className="text-center mb-8" variants={itemVariants}>
-            <motion.button
-              onClick={handleGeneratePrompt}
-              disabled={isGenerating || !isValidIdea}
-              className="btn-secondary text-lg py-4 px-8 flex items-center space-x-3 mx-auto disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              whileHover={isValidIdea ? { scale: 1.05, y: -2 } : {}}
-              whileTap={isValidIdea ? { scale: 0.95 } : {}}
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+              {/* Primary Generate Button */}
+              <motion.button
+                onClick={handleGeneratePrompt}
+                disabled={isGenerating || !isValidIdea}
+                className="btn-secondary text-lg py-4 px-8 flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                whileHover={isValidIdea ? { scale: 1.05, y: -2 } : {}}
+                whileTap={isValidIdea ? { scale: 0.95 } : {}}
+              >
+                {isGenerating ? (
+                  <>
+                    <motion.div
+                      className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    />
+                    <span>Generating Code Prompt...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileCode className="h-6 w-6" />
+                    <span>Generate AI Code Prompt</span>
+                    <Zap className="h-6 w-6" />
+                  </>
+                )}
+              </motion.button>
+
+              {/* Quick Build Prompt Navigation Button */}
+              <motion.button
+                onClick={handleScrollToQuickPrompt}
+                className="btn-ghost text-lg py-4 px-6 flex items-center space-x-3 border border-blue-500/30 hover:border-blue-500/60 transition-all duration-200 group"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                title="Navigate to Quick Build Prompt Generator (500 char limit, faster response)"
+              >
+                <svg className="w-5 h-5 group-hover:text-blue-400 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span className="group-hover:text-blue-400 transition-colors duration-200">Quick Build Prompt</span>
+                <ArrowDown className="h-5 w-5 group-hover:text-blue-400 transition-colors duration-200" />
+              </motion.button>
+            </div>
+
+            {/* Helper text */}
+            <motion.div 
+              className="mt-4 text-center text-sm text-neutral-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
             >
-              {isGenerating ? (
-                <>
-                  <motion.div
-                    className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  />
-                  <span>Generating Code Prompt...</span>
-                </>
-              ) : (
-                <>
-                  <FileCode className="h-6 w-6" />
-                  <span>Generate AI Code Prompt</span>
-                  <Zap className="h-6 w-6" />
-                </>
-              )}
-            </motion.button>
+              <p>💡 <strong>Comprehensive Prompt</strong> (above) or <strong>Quick Prompt</strong> (below) for faster results</p>
+            </motion.div>
             
             {!isValidIdea && (
               <motion.p
