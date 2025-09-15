@@ -37,10 +37,10 @@ router.post('/', async (req, res) => {
       });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.DEEPSEEK_API_KEY) {
       return res.status(500).json({ 
         error: 'Configuration error', 
-        message: 'OpenAI API key is not configured. Please check server configuration.' 
+        message: 'DeepSeek API key is not configured. Please check server configuration.' 
       });
     }
 
